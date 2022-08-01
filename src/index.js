@@ -1,6 +1,6 @@
 const { status } = require("minecraft-server-util");
 const axios = require('axios');
-const { serverIP, serverPort, webhook } = require('./config.json');
+const { serverIP, serverPort, webhook } = require('../config.json');
 
 const option = {
     timeout: 1000 * 5,
@@ -11,7 +11,7 @@ let Status =  null;
 let server = {};
 
 function getStatus() {
-    status('fubuki.asthriona.space', 25565, option)
+    status(serverIP, serverPort, option)
         .then(data => {
             if (!Status) {
                 console.log("Server is online (first check)")
@@ -89,7 +89,7 @@ function getStatus() {
     };
     setInterval(getStatus, 10000);
     function sendMessage(Status, server) {
-        axios.post('https://canary.discord.com/api/webhooks/1003680583186120764/NX_MppL7UYD6wtE7uw56qCOwuibvN-rYXuCZ5Z7Tf7u2rCBLU_BsjaEDTSUr6sKqwC9z', {
+        axios.post(webhook, {
             "embeds": [
                 {
                     "title": Status.title,
