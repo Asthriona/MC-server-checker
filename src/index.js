@@ -1,5 +1,4 @@
 const { status } = require("minecraft-server-util");
-const { Client, GatewayIntentBits, EmbedBuilder } = require("discord.js");
 const axios = require('axios');
 const { serverIP, serverPort, webhook } = require('./config.json');
 
