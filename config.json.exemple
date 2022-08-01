@@ -1,0 +1,5 @@
+{
+    "serverIP": "asthriona.space",
+    "serverPort": 25565,
+    "webhook": "https://canary.discord.com/api/webhooks/XXXXXXXXXXXXXXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+}
