@@ -13,7 +13,7 @@ copy the `config.json.exemple` and name it `config.json`
 mv config.json.exemple config.json
 ```  
   
-then fillup the information with your server IP (`123.123.123.123` or `minecraft.asthriona.com` are both valid ***"***IPs ***"***), port, and a webhook link from a discord channel.
+then fillup the information with your server IP (`123.123.123.123` or `minecraft.asthriona.com` are both valid **"** *`IPs`* **"**), port, and a webhook link from a discord channel.
 ```json 
 {
     "serverIP": "minecraft.asthriona.com",
