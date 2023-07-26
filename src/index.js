@@ -1,8 +1,7 @@
 const axios = require('axios');
-const { WebhookClient, MessageEmbed } = require('discord.js');
-
 const config = require('../config.json');
 
+// Super Sleep 9000 (Technology stolen from Kyoko's mstdn-cablePorn bot)
 const sleep = (milliseconds) => new Promise(resolve => setTimeout(resolve, milliseconds));
 
 let previousStatus = null;
