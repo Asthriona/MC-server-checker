@@ -1,106 +1,51 @@
-const { status } = require("minecraft-server-util");
 const axios = require('axios');
-const { serverIP, serverPort, webhook } = require('../config.json');
+const { WebhookClient, MessageEmbed } = require('discord.js');
 
-const option = {
-    timeout: 1000 * 5,
-    enableSRV: true,
-}
+const config = require('../config.json');
 
-let Status =  null;
-let server = {};
+const sleep = (milliseconds) => new Promise(resolve => setTimeout(resolve, milliseconds));
 
-function getStatus() {
-    status(serverIP, serverPort, option)
-        .then(data => {
-            if (!Status) {
-                console.log("Server is online (first check)")
-                server = {
-                    version: data.version.name,
-                    players: data.players.online,
-                    maxPlayers: data.players.max,
-                    motd: data.motd.clean,
-                }
-                Status = {
-                    online: true,
-                    isFirst: true,
-                    title: "✅✅ Fubuki is now online! ✅✅",
-                    message: `This is the first message. \nThe server might never been down in the first place. \nJust letting you know :)\nServer IP: \`fubuki.asthriona.space\`\nModpack: \`FTB Infinity Evolved\`\nVersion: \`${server.version}\`\nPlayers: \`${server.players} \\ ${server.maxPlayers}\`\nmotd: \`${server.motd}\``,
-                    color: "#4718336"
+let previousStatus = null;
 
-                }
-                return sendMessage(Status, server);
-            } else if (Status.online == true) {
-                server = {
-                    version: data.version.name,
-                    players: data.players.online,
-                    maxPlayers: data.players.max,
-                    motd: data.motd.clean,
-                }
-                Status = {
-                    online: true,
-                    isFirst: false,
-                }
-            } else if (Status.online == false && Status !== null) {
-                console.log("server is back online!")
-                server = {
-                    version: data.version.name,
-                    players: data.players.online,
-                    maxPlayers: data.players.max,
-                    motd: data.motd.clean,
-                }
-                Status = {
-                    online: true,
-                    isFirst: false,
-                    title: "✅✅ Fubuki is now back online! ✅✅",
-                    color: "#4718336"
-                }
-                sendMessage(Status, server);
-            } else {
-                server = {
-                    version: data.version.name,
-                    players: data.players.online,
-                    maxPlayers: data.players.max,
-                    motd: data.motd.clean,
-                }
-                Status = {
-                    online: true,
-                    isFirst: false,
-                }
-            }
-        })
-        .catch(err => {
-            if (Status.online == false) {
-                console.log("Server is still offline.");
-            } else if (Status.online == true) {
-                console.log("Server is now offline.");
-                Status = {
-                    online: false,
-                    isFirst: false,
-                    title: "❌❌ Fubuki went down! ❌❌",
-                    message: `The minecraft server went down. Ping @Asthrona#0001 if the issue is not solved in the next 10 minutes.`,
-                    color: "#ff0000"
-                }
-                sendMessage(Status, server);
-            } else {
-                console.log("Server is still offline.");
-            }
-        })
-    };
-    setInterval(getStatus, 10000);
-    function sendMessage(Status, server) {
-        axios.post(webhook, {
-            "embeds": [
+// Send webhook function
+const sendWebhook = async (message, color) => {
+    try {
+        const { webhook } = config;
+        await axios.post(webhook, {
+            content: message,
+            embeds: [
                 {
-                    "title": Status.title,
-                    "description": Status.message,
-                    "color": 4718336
+                    title: "Minecraft Server Status",
+                    description: message,
+                    color,
                 }
             ],
-            "attachments": []
-        })
-        .then((res) => {
-            console.log(res.data);
-        })
+        });
+    } catch (error) {
+        console.error('Error sending Discord Webhook.', error.message)
     }
+};
 
+// Check server status function
+const checkMinecraftServer = async () => {
+  const { serverIP, serverPort } = config;
+  while (true) {
+    try {
+        const res = await axios.get(`https://api.mcsrvstat.us/2/${serverIP}:${serverPort}`);
+        const isOnline = res.status === 200 && res.data && res.data.online;
+        if(isOnline !== previousStatus) {
+            previousStatus = isOnline;
+            const message = isOnline ? `✅ ${serverIP} is ONLINE! ✅` : `❌ ${serverIP} is OFFLINE! ❌`;
+            const embedMessage = isOnline ? `${serverIP} is ONLINE!` : `${serverIP} is OFFLINE!`;
+            const color = isOnline ? 0x00FF00 : 0xFF0000;
+            console.log(message);
+            sendWebhook(message, color);
+        }
+    } catch (error) {
+        console.error(error);
+    }
+    await sleep(30000);
+  }
+};
+
+checkMinecraftServer();
