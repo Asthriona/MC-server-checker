@@ -9,7 +9,23 @@ You need:
 - NodeJS 8 or higher
   
 copy the `config.json.exemple` and name it `config.json`  
+```bash
+mv config.json.exemple config.json
+```  
+  
 
+```json 
+{
+    "serverIP": "minecraft.asthriona.com",
+    "serverPort": 25565,
+    "webhook": "https://canary.discord.com/api/webhooks/XXXXXXXXXXXXXXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+}
+```
+then install the NPM packages and run it.
+```bash
+npm i
+node src/index.js
+```  
   
 To keep the app running I would suggest [PM2](https://pm2.keymetrics.io/) or simillar apps.  
   
